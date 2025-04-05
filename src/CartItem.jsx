@@ -7,19 +7,38 @@ const CartItem = ({ onContinueShopping }) => {
   const cart = useSelector(state => state.cart.items);
   const dispatch = useDispatch();
 
-  // Maneja el botón de eliminar
-  const handleRemove = (item) => {
-    dispatch(removeItem(item.name)); // Eliminar el producto por su nombre
-  };
-
-  // Calculate total amount for all products in the cart
   const calculateTotalAmount = () => {
-    return cart.reduce((total, item) => total + item.quantity * parseFloat(item.cost.replace('$', '')), 0);
+    let total = 0;
+    cart.forEach(item => {
+      const itemCost = parseFloat(item.cost.substring(1));
+      total += itemCost * item.quantity;
+    });
+    return total.toFixed(2); // Retorna el total con dos decimales
   };
 
-  // Calculate total cost based on quantity for an item
+  const handleContinueShopping = (e) => {
+    onContinueShopping(e); // Llama a la función que se pasó desde el componente padre
+  };
+
+  const handleIncrement = (item) => {
+    dispatch(updateQuantity({ name: item.name, quantity: item.quantity + 1 }));
+  };
+
+  const handleDecrement = (item) => {
+    if (item.quantity > 1) {
+      dispatch(updateQuantity({ name: item.name, quantity: item.quantity - 1 }));
+    } else {
+      dispatch(removeItem(item.name));
+    }
+  };
+
+  const handleRemove = (item) => {
+    dispatch(removeItem(item.name));
+  };
+
   const calculateTotalCost = (item) => {
-    return item.quantity * parseFloat(item.cost.replace('$', ''));
+    const itemCost = parseFloat(item.cost.substring(1));
+    return (itemCost * item.quantity).toFixed(2);
   };
 
   return (
@@ -47,12 +66,10 @@ const CartItem = ({ onContinueShopping }) => {
       <div className="continue_shopping_btn">
         <button className="get-started-button" onClick={(e) => handleContinueShopping(e)}>Continue Shopping</button>
         <br />
-        <button className="get-started-button1">Checkout</button>
+        <button className="get-started-button1" onClick={(e) => alert('Functionality to be added for future reference')}>Checkout</button>
       </div>
     </div>
   );
 };
 
 export default CartItem;
-
-
